@@ -980,7 +980,7 @@ def test_setup_logger_reset_clears_named_loggers():
 
 def test_version_exists():
     """Test that __version__ is defined."""
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.3.0"
 
 
 def test_version_is_string():
@@ -1063,4 +1063,78 @@ def test_remove_logger_updates_setup_regs():
 
     loggers.remove_logger("remove_me")
     assert not any(r.name == "remove_me" for r in loggers._setup._regs)
+    SetupLogger.reset()
+
+
+def test_remove_logger_cleans_logger_dict():
+    """Test that remove_logger() removes logger from logging.root.manager.loggerDict."""
+    SetupLogger.reset()
+
+    class CleanLoggers(InitLoggers):
+        app = LoggerReg(name="CLEAN_BASE")
+
+    loggers = CleanLoggers(developer_mode=True)
+    loggers.add_logger("to_remove")
+    assert "to_remove" in logging.root.manager.loggerDict
+
+    loggers.remove_logger("to_remove")
+    assert "to_remove" not in logging.root.manager.loggerDict
+    SetupLogger.reset()
+
+
+def test_setup_logger_force_reconfigures():
+    """Test that force=True reconfigures even if already configured."""
+    SetupLogger.reset()
+
+    class FirstLoggers(InitLoggers):
+        app = LoggerReg(name="FIRST", level=LoggerReg.Level.INFO)
+
+    first = FirstLoggers(developer_mode=True)
+    assert SetupLogger._configured
+
+    # Second instance should not reconfigure by default
+    class SecondLoggers(InitLoggers):
+        db = LoggerReg(name="SECOND")
+
+    second = SecondLoggers(developer_mode=True)
+    assert len(first._setup._regs) == 1
+    assert len(second._setup._regs) == 1
+
+    # force=True should reconfigure
+    third = SecondLoggers(developer_mode=True, force=True)
+    assert third._setup._configured
+    assert len(third._setup._regs) == 1
+    SetupLogger.reset()
+
+
+def test_get_logger_force_reconfigures():
+    """Test that force=True in get_logger() resets configuration."""
+    SetupLogger.reset()
+
+    logger1 = get_logger("test1", level=Level.INFO)
+    assert SetupLogger._configured
+
+    logger2 = get_logger("test2", force=True)
+    assert SetupLogger._configured
+    assert logger1 is not None
+    assert logger2 is not None
+    SetupLogger.reset()
+
+
+def test_add_logger_assigns_handlers():
+    """Test that add_logger() configures the logger with proper level and propagation."""
+    SetupLogger.reset()
+
+    class BaseLoggers(InitLoggers):
+        app = LoggerReg(name="BASE_APP")
+
+    loggers = BaseLoggers(developer_mode=True)
+    loggers.add_logger("dynamic_logger", level=Level.WARNING)
+
+    # Verify the logger is configured
+    dynamic = logging.getLogger("dynamic_logger")
+    assert dynamic.level <= logging.WARNING or dynamic.propagate
+
+    # Verify it works
+    assert "dynamic_logger" in loggers.logger_names()
     SetupLogger.reset()

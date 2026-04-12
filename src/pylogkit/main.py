@@ -174,6 +174,7 @@ class SetupLogger:
         log_file: str | None = None,
         max_bytes: int = 0,
         backup_count: int = 0,
+        force: bool = False,
     ) -> None:
         self._regs: list[LoggerReg] = [*name_registration] if name_registration else [LoggerReg("__root__")]
         self._developer_mode = developer_mode
@@ -181,7 +182,9 @@ class SetupLogger:
         self._log_file = log_file
         self._max_bytes = max_bytes
         self._backup_count = backup_count
-        if not SetupLogger._configured:
+        if not SetupLogger._configured or force:
+            if force:
+                self.reset()
             self._init_structlog()
             SetupLogger._configured = True
 
@@ -368,6 +371,7 @@ def get_logger(
     log_file: str | None = None,
     max_bytes: int = 0,
     backup_count: int = 0,
+    force: bool = False,
 ) -> BoundLogger:
     """
     Get a configured logger without class inheritance.
@@ -383,6 +387,7 @@ def get_logger(
         log_file: Path to log file. If None, logs to stderr.
         max_bytes: Maximum size in bytes before rotation (0 = no rotation).
         backup_count: Number of backup files to keep (0 = unlimited).
+        force: Reconfigure logging even if already configured.
 
     Returns:
         A configured structlog stdlib BoundLogger instance.
@@ -396,6 +401,8 @@ def get_logger(
     """
     if not name or not name.strip():
         raise InvalidLoggerNameError("Logger name must not be empty.")
+    if force and SetupLogger._configured:  # noqa: SLF001
+        SetupLogger.reset()
     if not SetupLogger._configured:  # noqa: SLF001
         SetupLogger._quick_setup(  # noqa: SLF001
             level=level,
@@ -423,6 +430,7 @@ class InitLoggers:
         log_file: str | None = None,
         max_bytes: int = 0,
         backup_count: int = 0,
+        force: bool = False,
     ) -> None:
         self._loggers = {name: getattr(self, name) for name in dir(self) if isinstance(getattr(self, name), LoggerReg)}
         if not self._loggers:
@@ -436,6 +444,7 @@ class InitLoggers:
             log_file=log_file,
             max_bytes=max_bytes,
             backup_count=backup_count,
+            force=force,
         )
         self._instances = {reg.name: structlog.get_logger(reg.name) for reg in self._loggers.values()}
 
@@ -483,12 +492,9 @@ class InitLoggers:
 
         reg = LoggerReg(name=name, level=level, propagate=propagate)
         self._loggers[name] = reg
-        self._instances[name] = structlog.get_logger(name)
-
-        # Keep _setup._regs in sync for consistency
-        self._setup._regs.append(reg)  # noqa: SLF001
 
         # Reconfigure logging for the new logger using incremental mode
+        # The logger inherits handlers from root via propagate (default behavior)
         logging.config.dictConfig(
             {
                 "version": 1,
@@ -502,6 +508,12 @@ class InitLoggers:
                 },
             },
         )
+
+        self._instances[name] = structlog.get_logger(name)
+
+        # Keep _setup._regs in sync for consistency
+        self._setup._regs.append(reg)  # noqa: SLF001
+
         return self._instances[name]
 
     def all(self) -> dict[str, BoundLogger]:
@@ -538,6 +550,10 @@ class InitLoggers:
             named_logger.removeHandler(handler)
         named_logger.setLevel(logging.NOTSET)
         named_logger.propagate = False
+
+        # Remove from logging system's logger dict
+        if name in logging.root.manager.loggerDict:
+            del logging.root.manager.loggerDict[name]
 
         del self._instances[name]
         # Only remove from _loggers if it was added dynamically
