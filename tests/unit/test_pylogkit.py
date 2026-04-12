@@ -1165,3 +1165,25 @@ def test_get_logger_custom_renderer():
     logger = get_logger("quick_render", renderer=my_renderer)
     assert logger is not None
     SetupLogger.reset()
+
+
+def test_save_and_load_config(tmp_path):
+    """Test saving and loading configuration."""
+    SetupLogger.reset()
+
+    class ConfigLoggers(InitLoggers):
+        app = LoggerReg(name="CFG_APP", level=LoggerReg.Level.WARNING)
+        db = LoggerReg(name="CFG_DB", level=LoggerReg.Level.DEBUG, propagate=True)
+
+    loggers = ConfigLoggers(developer_mode=True)
+    config_file = tmp_path / "config.json"
+    loggers.save_config(str(config_file))
+
+    # Load and verify
+    loaded = InitLoggers.load_config(str(config_file))
+    assert "CFG_APP" in loaded["loggers"]
+    assert loaded["loggers"]["CFG_APP"]["level"] == "WARNING"
+    assert loaded["loggers"]["CFG_DB"]["level"] == "DEBUG"
+    assert loaded["loggers"]["CFG_DB"]["propagate"] is True
+    assert loaded["developer_mode"] is True
+    SetupLogger.reset()

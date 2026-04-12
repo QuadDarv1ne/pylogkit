@@ -7,6 +7,7 @@ import sys
 from collections.abc import Callable, Iterator
 from datetime import date, datetime
 from enum import Enum
+from pathlib import Path
 from typing import Any, Protocol
 
 import structlog
@@ -606,3 +607,35 @@ class InitLoggers:
     def logger_names(self) -> list[str]:
         """Return list of registered logger names."""
         return list(object.__getattribute__(self, "_instances").keys())
+
+    def save_config(self, path: str) -> None:
+        """
+        Save logger configuration to a JSON file.
+
+        Args:
+            path: File path to save configuration.
+        """
+        loggers = object.__getattribute__(self, "_loggers")
+        setup = object.__getattribute__(self, "_setup")
+        config = {
+            "loggers": {
+                reg.name: {"level": reg.level.value, "propagate": reg.propagate}
+                for reg in loggers.values()
+            },
+            "developer_mode": setup._developer_mode,  # noqa: SLF001
+            "async_mode": setup._async_mode,  # noqa: SLF001
+        }
+        Path(path).write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    @classmethod
+    def load_config(cls, path: str) -> dict[str, dict[str, Any]]:
+        """
+        Load logger configuration from a JSON file.
+
+        Args:
+            path: File path to load configuration from.
+
+        Returns:
+            Configuration dict suitable for creating loggers.
+        """
+        return json.loads(Path(path).read_text(encoding="utf-8"))  # type: ignore[no-any-return]
