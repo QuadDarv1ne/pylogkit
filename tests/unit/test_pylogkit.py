@@ -198,6 +198,17 @@ def test_init_loggers_getattr_private_underscore():
         _ = loggers._nonexistent_private
 
 
+def test_init_loggers_getattr_logger_not_found():
+    """Test that __getattr__ raises LoggerNotFoundError for unknown names."""
+
+    class MyLoggers(InitLoggers):
+        app = LoggerReg(name="APP_NOTFOUND")
+
+    loggers = MyLoggers(developer_mode=True)
+    with pytest.raises(LoggerNotFoundError, match="not found"):
+        _ = loggers.nonexistent_attr
+
+
 def test_get_logger_returns_logger_instance():
     """Test that get_logger returns a usable logger."""
     logger = get_logger("test_quick", level=LoggerReg.Level.INFO, developer_mode=True)

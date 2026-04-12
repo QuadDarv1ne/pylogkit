@@ -468,16 +468,12 @@ class InitLoggers:
 
     def __getattr__(self, name: str) -> BoundLogger:
         """Return an existing logger instance by name."""
-        # Avoid recursion during __init__ for private attrs
         if name.startswith("_"):
             raise AttributeError(name)
         instances = self._instances
-        try:
-            return instances[name]
-        except KeyError as exc:
-            registered = ", ".join(instances)
-            _msg = f"Logger '{name}' not found. Available: {registered}"
-            raise LoggerNotFoundError(_msg) from exc
+        registered = ", ".join(instances)
+        _msg = f"Logger '{name}' not found. Available: {registered}"
+        raise LoggerNotFoundError(_msg)
 
     def get_logger(self, name: str) -> BoundLogger:
         """
