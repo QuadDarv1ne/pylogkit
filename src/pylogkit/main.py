@@ -387,10 +387,15 @@ def get_logger(
     Returns:
         A configured structlog stdlib BoundLogger instance.
 
+    Raises:
+        InvalidLoggerNameError: If the logger name is empty.
+
     Example:
         >>> logger = get_logger("my_app", level=LoggerReg.Level.INFO)
         >>> logger.info("Hello, world!", version="1.0")
     """
+    if not name or not name.strip():
+        raise InvalidLoggerNameError("Logger name must not be empty.")
     if not SetupLogger._configured:  # noqa: SLF001
         SetupLogger._quick_setup(  # noqa: SLF001
             level=level,
@@ -526,11 +531,23 @@ class InitLoggers:
             _msg = f"Logger '{name}' not found. Available: {registered}"
             raise LoggerNotFoundError(_msg)
 
+        # Clean up underlying logging handlers
+        named_logger = logging.getLogger(name)
+        for handler in named_logger.handlers[:]:
+            handler.close()
+            named_logger.removeHandler(handler)
+        named_logger.setLevel(logging.NOTSET)
+        named_logger.propagate = False
+
         del self._instances[name]
         # Only remove from _loggers if it was added dynamically
         loggers = object.__getattribute__(self, "_loggers")
         if name in loggers:
             del loggers[name]
+
+        # Also clean up _setup._regs for consistency
+        setup = object.__getattribute__(self, "_setup")
+        setup._regs = [r for r in setup._regs if r.name != name]  # noqa: SLF001
 
     def logger_level(self, name: str) -> Level:
         """

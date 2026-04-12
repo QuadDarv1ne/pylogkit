@@ -1009,3 +1009,58 @@ def test_level_class_exported():
     assert Level.WARNING == LoggerReg.Level.WARNING
     assert Level.ERROR == LoggerReg.Level.ERROR
     assert Level.CRITICAL == LoggerReg.Level.CRITICAL
+
+
+def test_get_logger_empty_name_raises():
+    """Test that get_logger() validates empty name."""
+    SetupLogger.reset()
+    with pytest.raises(InvalidLoggerNameError, match="must not be empty"):
+        get_logger("")
+    with pytest.raises(InvalidLoggerNameError, match="must not be empty"):
+        get_logger("   ")
+    SetupLogger.reset()
+
+
+def test_remove_logger_cleans_handlers():
+    """Test that remove_logger() properly cleans up logging handlers."""
+    SetupLogger.reset()
+
+    class TestLoggers(InitLoggers):
+        app = LoggerReg(name="CLEAN_APP")
+
+    loggers = TestLoggers(developer_mode=True)
+    loggers.add_logger("temp_logger")
+
+    # Add a real handler to the underlying logger to test cleanup
+    named = logging.getLogger("temp_logger")
+    test_handler = logging.StreamHandler()
+    named.addHandler(test_handler)
+    assert len(named.handlers) > 0
+
+    loggers.remove_logger("temp_logger")
+
+    # Verify logger is removed from internal state
+    assert "temp_logger" not in loggers.logger_names()
+    assert "temp_logger" not in loggers.all()
+
+    # Verify underlying logging.Logger is cleaned
+    assert len(named.handlers) == 0
+    assert named.level == logging.NOTSET
+    assert named.propagate is False
+    SetupLogger.reset()
+
+
+def test_remove_logger_updates_setup_regs():
+    """Test that remove_logger() updates _setup._regs list."""
+    SetupLogger.reset()
+
+    class RegLoggers(InitLoggers):
+        app = LoggerReg(name="REG_APP")
+
+    loggers = RegLoggers(developer_mode=True)
+    loggers.add_logger("remove_me")
+    assert any(r.name == "remove_me" for r in loggers._setup._regs)
+
+    loggers.remove_logger("remove_me")
+    assert not any(r.name == "remove_me" for r in loggers._setup._regs)
+    SetupLogger.reset()

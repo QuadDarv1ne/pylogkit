@@ -4,15 +4,14 @@
 - Ветка разработки: `dev`
 - Версия: `0.2.0`
 - Python: `>=3.13`
-- Тесты: **106 passed**
+- Тесты: **109 passed**
 - Coverage: **100%** (fail_under = 100)
 - Type checking: ✅ mypy strict mode + py.typed + BoundLogger тип
 - CI/CD: ✅ GitHub Actions (test + build + build-PR + PyPI publish + pip-audit + ruff format --check)
 - Ruff: ✅ проверяет src + tests + examples + benchmarks + format check
 - Репозиторий: https://github.com/QuadDarv1ne/pylogkit
 - Автор: QuadD4rv1n7 <maksimqwe42@mail.ru>
-- История: 1 чистый коммит (squash)
-- PyPI: пакет не опубликован (ожидает токена)
+- PyPI: опубликован `pylogkit-dev` v0.2.0
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
