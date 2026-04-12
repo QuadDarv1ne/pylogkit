@@ -38,7 +38,7 @@ from pylogkit.main import (
     make_json_safe as make_json_safe,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "InitLoggers",
