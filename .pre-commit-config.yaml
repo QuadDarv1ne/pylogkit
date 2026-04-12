@@ -1,0 +1,24 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.1
+    hooks:
+      - id: ruff-check
+        types_or: [ python, pyi ]
+        args: ["--fix"]
+      - id: ruff-format
+        types_or: [ python, pyi ]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run tests
+        entry: pytest tests --cov=pylogkit --cov-report=term-missing
+        language: system
+        types: [ python ]
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets

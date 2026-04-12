@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pylogkit"
+version = "0.2.0"
+description = "A superstructure over structlog that simplifies the configuration and use of structured logging in Python."
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [{ name="QuadD4rv1n7", email="maksimqwe42@mail.ru" }]
+license = "MIT"
+license-files = ["LICENSE"]
+
+dependencies = [
+    "structlog>=25.4.0",
+]
+
+keywords = ["logging", "structlog", "structured-logging", "json-logging"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Logging",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/QuadDarv1ne/pylogkit"
+Repository = "https://github.com/QuadDarv1ne/pylogkit"
+Issues = "https://github.com/QuadDarv1ne/pylogkit/issues"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.139.2",
+    "mypy>=1.19.0",
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.13.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:warnings"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["pylogkit"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ARG", "ANN",
+    "D100", "D101", "D102", "D103", "D104", "D106", "D107", "D205", "D400", "D415", "D419", "D200", "D203", "D211", "D212", "D417", "D401", "D413",
+    "COM812",
+    "E501", "EM101", "EM102",
+    "RUF001", "RUF002", "RUF003", "RET505",
+    "TC001", "TRY003", "TRY300", "TRY301",
+    "PYI013", "PIE790", "PLR0913", "PT018",
+    "G004",
+    "INP001",
+    "UP007",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["TID252", "PLR2004", "S101", "SLF001"]
+"examples/*" = ["T201"]
+"benchmarks/*" = ["T201"]
+
+[tool.ruff.lint.isort]
+no-lines-before = ["local-folder"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
