@@ -7,12 +7,18 @@ import sys
 from collections.abc import Callable, Iterator
 from datetime import date, datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Protocol
 
 import structlog
 from structlog.contextvars import bind_contextvars, clear_contextvars, get_contextvars
 from structlog.stdlib import BoundLogger
 from structlog.typing import EventDict
+
+
+class RendererProto(Protocol):
+    """Protocol for custom renderers."""
+
+    def __call__(self, event_dict: EventDict) -> str: ...
 
 
 def _json_default(obj: Any) -> Any:
@@ -175,6 +181,7 @@ class SetupLogger:
         max_bytes: int = 0,
         backup_count: int = 0,
         force: bool = False,
+        renderer: RendererProto | None = None,
     ) -> None:
         self._regs: list[LoggerReg] = [*name_registration] if name_registration else [LoggerReg("__root__")]
         self._developer_mode = developer_mode
@@ -182,6 +189,7 @@ class SetupLogger:
         self._log_file = log_file
         self._max_bytes = max_bytes
         self._backup_count = backup_count
+        self._custom_renderer = renderer
         if not SetupLogger._configured or force:
             if force:
                 self.reset()
@@ -276,15 +284,18 @@ class SetupLogger:
     def _init_structlog(self) -> None:
         handlers_cfg = self._get_handler_config()
 
+        # Use custom renderer if provided, otherwise default based on mode
+        render_proc = self._custom_renderer or structlog.processors.JSONRenderer()
+
         formatters = {
             self.JSON_HANDLER: {
                 "()": structlog.stdlib.ProcessorFormatter,
-                "processor": structlog.processors.JSONRenderer(),
+                "processor": render_proc,
                 "foreign_pre_chain": self._pre(),
             },
             self.CONSOLE_HANDLER: {
                 "()": structlog.stdlib.ProcessorFormatter,
-                "processor": structlog.dev.ConsoleRenderer(),
+                "processor": render_proc,
                 "foreign_pre_chain": self._pre(),
             },
         }
@@ -326,6 +337,7 @@ class SetupLogger:
         log_file: str | None = None,
         max_bytes: int = 0,
         backup_count: int = 0,
+        renderer: RendererProto | None = None,
     ) -> None:
         """Minimal setup for the ``get_logger()`` convenience function."""
         regs = [LoggerReg("__quick__", level)]
@@ -336,6 +348,7 @@ class SetupLogger:
             log_file=log_file,
             max_bytes=max_bytes,
             backup_count=backup_count,
+            renderer=renderer,
         )
 
     @staticmethod
@@ -372,6 +385,7 @@ def get_logger(
     max_bytes: int = 0,
     backup_count: int = 0,
     force: bool = False,
+    renderer: RendererProto | None = None,
 ) -> BoundLogger:
     """
     Get a configured logger without class inheritance.
@@ -411,6 +425,7 @@ def get_logger(
             log_file=log_file,
             max_bytes=max_bytes,
             backup_count=backup_count,
+            renderer=renderer,
         )
     return structlog.get_logger(name)  # type: ignore[no-any-return]
 
@@ -431,6 +446,7 @@ class InitLoggers:
         max_bytes: int = 0,
         backup_count: int = 0,
         force: bool = False,
+        renderer: RendererProto | None = None,
     ) -> None:
         self._loggers = {name: getattr(self, name) for name in dir(self) if isinstance(getattr(self, name), LoggerReg)}
         if not self._loggers:
@@ -445,6 +461,7 @@ class InitLoggers:
             max_bytes=max_bytes,
             backup_count=backup_count,
             force=force,
+            renderer=renderer,
         )
         self._instances = {reg.name: structlog.get_logger(reg.name) for reg in self._loggers.values()}
 

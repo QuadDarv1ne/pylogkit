@@ -17,6 +17,9 @@ from pylogkit.main import (
     LoggerReg as LoggerReg,
 )
 from pylogkit.main import (
+    RendererProto as RendererProto,
+)
+from pylogkit.main import (
     SetupLogger as SetupLogger,
 )
 from pylogkit.main import (
@@ -47,6 +50,7 @@ __all__ = [
     "LoggerError",
     "LoggerNotFoundError",
     "LoggerReg",
+    "RendererProto",
     "SetupLogger",
     "__version__",
     "bind",

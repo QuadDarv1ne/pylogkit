@@ -1138,3 +1138,30 @@ def test_add_logger_assigns_handlers():
     # Verify it works
     assert "dynamic_logger" in loggers.logger_names()
     SetupLogger.reset()
+
+
+def test_custom_renderer():
+    """Test that custom renderer is used when provided."""
+    SetupLogger.reset()
+
+    def my_renderer(event_dict: dict) -> str:
+        return f"CUSTOM: {event_dict.get('event', '')}"
+
+    class RenderLoggers(InitLoggers):
+        app = LoggerReg(name="RENDER_APP")
+
+    loggers = RenderLoggers(developer_mode=True, renderer=my_renderer)
+    assert loggers._setup._custom_renderer is my_renderer
+    SetupLogger.reset()
+
+
+def test_get_logger_custom_renderer():
+    """Test that get_logger() accepts custom renderer."""
+    SetupLogger.reset()
+
+    def my_renderer(event_dict: dict) -> str:
+        return f"QUICK: {event_dict.get('event', '')}"
+
+    logger = get_logger("quick_render", renderer=my_renderer)
+    assert logger is not None
+    SetupLogger.reset()
