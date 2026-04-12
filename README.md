@@ -186,3 +186,22 @@ loggers = Loggers(
 ## 📜 Лицензия
 
 MIT License — подробности в файле [LICENSE](LICENSE).
+
+---
+
+### 👤 Об авторе
+
+#### ♟️ Дуплей Максим Игоревич
+
+| Профиль | Ссылка |
+|---------|--------|
+| 🏆 FIDE | [540098680](https://ratings.fide.com/profile/540098680) — Arena FIDE Master (AFM) |
+| 💼 Profi.ru | [Профиль на Profi.ru](https://profi.ru/profile/DupleyMI) |
+| 📚 Обучение | [Kwork — обучение программированию](https://kwork.ru/usability-testing/42465951/obuchenie-tekhnologiyam-i-yazykam-programmirovaniya) |
+| 🏫 Школа | [Maestro7IT](https://school-maestro7it.ru/) |
+
+---
+
+📲 **Telegram:** [@quadd4rv1n7](https://t.me/quadd4rv1n7) | [@dupley_maxim_1999](https://t.me/dupley_maxim_1999)
+
+📧 **Email:** maksimqwe42@mail.ru

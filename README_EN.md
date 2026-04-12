@@ -186,3 +186,22 @@ More examples are available in the [`examples/`](examples/) directory:
 ## 📜 License
 
 MIT License — see [LICENSE](LICENSE) for details.
+
+---
+
+### 👤 About the Author
+
+#### ♟️ Maksim Dupley
+
+| Profile | Link |
+|---------|------|
+| 🏆 FIDE | [540098680](https://ratings.fide.com/profile/540098680) — Arena FIDE Master (AFM) |
+| 💼 Profi.ru | [Profile on Profi.ru](https://profi.ru/profile/DupleyMI) |
+| 📚 Tutoring | [Kwork — Programming Tutor](https://kwork.ru/usability-testing/42465951/obuchenie-tekhnologiyam-i-yazykam-programmirovaniya) |
+| 🏫 School | [Maestro7IT](https://school-maestro7it.ru/) |
+
+---
+
+📲 **Telegram:** [@quadd4rv1n7](https://t.me/quadd4rv1n7) | [@dupley_maxim_1999](https://t.me/dupley_maxim_1999)
+
+📧 **Email:** maksimqwe42@mail.ru
