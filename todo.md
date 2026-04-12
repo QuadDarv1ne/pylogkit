@@ -8,7 +8,11 @@
 - Coverage: **100%** (fail_under = 100)
 - Type checking: ✅ mypy strict mode + py.typed + BoundLogger тип
 - CI/CD: ✅ GitHub Actions (test + build + build-PR + PyPI publish + pip-audit + ruff format --check)
-- Ruff: ✅ проверяет src + tests + examples + format check
+- Ruff: ✅ проверяет src + tests + examples + benchmarks + format check
+- Репозиторий: https://github.com/QuadDarv1ne/pylogkit
+- Автор: QuadD4rv1n7 <maksimqwe42@mail.ru>
+- История: 1 чистый коммит (squash)
+- PyPI: пакет не опубликован (ожидает токена)
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
@@ -34,6 +38,10 @@
 - [x] **Очистка handlers в `reset()`** — предотвращение дублирования логов
 - [x] **`__version__`** — версия пакета в `__init__.py`
 - [x] **Консистентность `add_logger()`** — обновление `_setup._regs`
+- [x] **Переименование проекта** — kitstructlog → pylogkit
+- [x] **Чистая история git** — squash всех коммитов в один
+- [x] **Удаление следов kitstructlog** — из кода, документации, истории коммитов
+- [x] **Обновление remote** — https://github.com/QuadDarv1ne/pylogkit
 
 ## Потенциальные улучшения (в работе)
 - [ ] **Поддержка Python 3.10+** — расширить аудиторию (сейчас только 3.13+)
@@ -58,10 +66,11 @@
 - [x] Рассмотреть убрать `ANN` и `ARG` из ignore ruff — **решено оставить**: mypy strict покрывает src, ANN в тестах избыточен
 
 ### Итоги исправлений
+- Переименование: kitstructlog → pylogkit (код, тесты, примеры, CI/CD, документация)
 - Удалён скрытый логгер `confhub` (main.py)
 - Версии Python согласованы: 3.13+ везде (classifiers, ruff target)
-- Integration-тесты запускаются в CI (41 тест вместо 21)
-- Ruff проверяет src + tests + examples + format check
+- Integration-тесты запускаются в CI (106 тестов)
+- Ruff проверяет src + tests + examples + benchmarks + format check
 - CI: ruff check всех файлов, pytest tests, mypy без флагов, pip-audit, ruff format --check
 - Pre-commit: запускает все тесты
 - Добавлен `py.typed` marker для mypy
@@ -76,6 +85,8 @@
 - Исправлен test_logger_level_filtering: реальная проверка фильтрации
 - Integration тесты переписаны без лишних noqa
 - Coverage остался 100%
+- Git история: 1 чистый коммит, никаких следов kitstructlog
+- PyPI токен сохранён в ~/.pypirc (QuadD4rv1n7)
 
 ## Правила проекта
 - Не создавать документацию без запроса
