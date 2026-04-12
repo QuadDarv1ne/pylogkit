@@ -24,7 +24,7 @@
 ## 📦 Installation
 
 ```bash
-pip install pylogkit
+pip install pylogkit-dev
 ```
 
 ---
