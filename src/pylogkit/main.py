@@ -207,7 +207,11 @@ class SetupLogger:
     def _renderer(self) -> str:
         if self._log_file:
             return self.FILE_HANDLER
-        if sys.stderr.isatty() or os.environ.get("MODE_DEV") or self._developer_mode:
+        try:
+            is_tty = sys.stderr.isatty()
+        except (OSError, AttributeError):
+            is_tty = False
+        if is_tty or os.environ.get("MODE_DEV") or self._developer_mode:
             return self.CONSOLE_HANDLER
         return self.JSON_HANDLER
 
@@ -330,29 +334,6 @@ class SetupLogger:
         )
 
     @staticmethod
-    def _quick_setup(
-        *,
-        level: Level = Level.DEBUG,
-        developer_mode: bool = False,
-        async_mode: bool = False,
-        log_file: str | None = None,
-        max_bytes: int = 0,
-        backup_count: int = 0,
-        renderer: RendererProto | None = None,
-    ) -> None:
-        """Minimal setup for the ``get_logger()`` convenience function."""
-        regs = [LoggerReg("__quick__", level)]
-        SetupLogger(
-            regs,
-            developer_mode=developer_mode,
-            async_mode=async_mode,
-            log_file=log_file,
-            max_bytes=max_bytes,
-            backup_count=backup_count,
-            renderer=renderer,
-        )
-
-    @staticmethod
     def reset() -> None:
         """
         Reset configuration state.  Useful for testing.
@@ -419,8 +400,9 @@ def get_logger(
     if force and SetupLogger._configured:  # noqa: SLF001
         SetupLogger.reset()
     if not SetupLogger._configured:  # noqa: SLF001
-        SetupLogger._quick_setup(  # noqa: SLF001
-            level=level,
+        regs = [LoggerReg("__quick__", level)]
+        SetupLogger(
+            regs,
             developer_mode=developer_mode,
             async_mode=async_mode,
             log_file=log_file,
@@ -614,10 +596,7 @@ class InitLoggers:
         loggers = object.__getattribute__(self, "_loggers")
         setup = object.__getattribute__(self, "_setup")
         config = {
-            "loggers": {
-                reg.name: {"level": reg.level.value, "propagate": reg.propagate}
-                for reg in loggers.values()
-            },
+            "loggers": {reg.name: {"level": reg.level.value, "propagate": reg.propagate} for reg in loggers.values()},
             "developer_mode": setup._developer_mode,  # noqa: SLF001
             "async_mode": setup._async_mode,  # noqa: SLF001
         }

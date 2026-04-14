@@ -466,6 +466,36 @@ def test_renderer_returns_file_handler_when_log_file_set():
     SetupLogger.reset()
 
 
+def test_renderer_handles_isatty_error(monkeypatch):
+    """Test that _renderer handles isatty() raising OSError (frozen apps)."""
+
+    def raise_os_error():
+        raise OSError("cannot do this on frozen application")
+
+    monkeypatch.setattr("sys.stderr.isatty", raise_os_error)
+    SetupLogger.reset()
+    regs = [LoggerReg(name="ISATTY_TEST")]
+    s = SetupLogger(name_registration=regs, developer_mode=False)
+    # Should fall back to JSON handler when isatty fails
+    assert s._renderer == s.JSON_HANDLER
+    SetupLogger.reset()
+
+
+def test_renderer_handles_isatty_attribute_error(monkeypatch):
+    """Test that _renderer handles isatty() raising AttributeError."""
+
+    def raise_attribute_error():
+        raise AttributeError("no isatty")
+
+    monkeypatch.setattr("sys.stderr.isatty", raise_attribute_error)
+    SetupLogger.reset()
+    regs = [LoggerReg(name="ISATTY_ATTR_TEST")]
+    s = SetupLogger(name_registration=regs, developer_mode=False)
+    # Should fall back to JSON handler when isatty fails
+    assert s._renderer == s.JSON_HANDLER
+    SetupLogger.reset()
+
+
 def test_get_handler_config_returns_file_handler(tmp_path):
     """Test _get_handler_config includes file handler when log_file is set."""
     log_file = tmp_path / "config.log"
