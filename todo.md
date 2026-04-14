@@ -1,17 +1,35 @@
 # pylogkit - Todo
 
-## Текущий статус
-- Ветка разработки: `dev`
+## Текущий статус (2026-04-14)
+- Ветка разработки: `dev` (2 коммита впереди origin/dev — требуется push)
 - Версия: `0.3.0`
-- Python: `>=3.10`
-- Тесты: **117 passed**
+- Python: `>=3.10` (3.10–3.14)
+- Тесты: **125 passed** ✅ (119 unit + 6 property-based)
 - Coverage: **100%** (fail_under = 100)
-- Type checking: ✅ mypy strict mode + py.typed + BoundLogger тип
-- CI/CD: ✅ GitHub Actions (test + build + build-PR + PyPI publish + pip-audit + ruff format --check)
-- Ruff: ✅ проверяет src + tests + examples + benchmarks + format check
+- Type checking: ✅ mypy strict + py.typed + BoundLogger
+- CI/CD: ✅ GitHub Actions (test + build + build-PR + pip-audit + ruff format --check)
+- Ruff: ✅ src + tests + examples + benchmarks + format check
 - Репозиторий: https://github.com/QuadDarv1ne/pylogkit
-- Автор: QuadD4rv1n7 <maksimqwe42@mail.ru>
 - PyPI: опубликован `pylogkit-dev` v0.3.0
+- Лицензия: MIT
+
+### Архитектура
+- **SetupLogger** — низкоуровневая настройка logging + structlog (handlers, processors, async)
+- **InitLoggers** — базовый класс для определения всех логгеров проекта
+- **get_logger()** — быстрый логгер без наследования
+- **LoggerReg** — объявление логгера (name, level, propagate)
+- **context API** — bind / get_context / clear_context / context_scope
+- **processors** — make_json_safe (рекурсивный), add_caller_details
+- **RendererProto** — protocol для кастомных рендереров
+- **save_config/load_config** — сериализация конфигурации в JSON
+
+### Незакоммиченные изменения
+- `tests/unit/test_property_based.py` — изменён (требуется review и commit)
+- `todo.md` — обновляется
+
+### Последние улучшения (2026-04-14)
+- ✅ **+6 property-based тестов** — nested dict/list, non-serializable, edge cases
+- ✅ **Исправлены datetime вызовы в тестах** — tzinfo, убраны лишние lambda
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
@@ -53,18 +71,22 @@
 
 ### Ближайшие задачи (v0.4.0)
 - [ ] **Bump версии до 0.4.0** — публикация на PyPI с новыми фичами
-- [ ] **Trusted Publishing** — настройка OIDC для автопублики без токена
 - [ ] **Пример с кастомным renderer** — показать использование RendererProto
 - [ ] **Пример save/load config** — демонстрация сериализации
 - [ ] **CHANGELOG.md** — автоматическая генерация при релизе
+- [ ] **Тесты save_config/load_config** — покрытие сериализации (если ещё не покрыты)
+- [ ] **Тесты кастомного renderer** — проверка RendererProto protocol
+- [ ] **Push origin/dev** — 2 коммита ожидают отправки
 
 ### Среднесрочные улучшения (v0.5.x)
 - [ ] **Tracing support** — интеграция с OpenTelemetry/trace_id, span_id
 - [ ] **Фильтры по имени логгера** — возможность фильтровать сообщения по паттерну
 - [ ] **Цветовая схема ConsoleRenderer** — кастомизация цветов в dev режиме
-- [ ] **Асинхронные файловые обработчики** — для высокой нагрузки
 - [ ] **Структурированные исключения** — стандартный формат error в JSON
 - [ ] **Метрики логирования** — счётчики сообщений по уровням/логгерам
+- [ ] **Environment-based конфигуровка** — загрузка конфига из env vars
+- [ ] **Lazy evaluation для дорогих значений** — отложенное вычисление логов
+- [ ] **Workflow PyPI publish** — в ci.yml нет publish шага (нужно добавить или подтвердить отдельный файл)
 
 ### Долгосрочные цели (v1.0.0)
 - [ ] **Стабильный релиз 1.0.0** — полный API, документация, миграция
@@ -81,31 +103,24 @@
 - [x] Добавить benchmarks для оценки производительности
 - [ ] Рассмотреть добавление pydantic для валидации конфигурации
 
-## Результаты аудита (2026-04-12)
+## Результаты аудита (2026-04-12) — всё исправлено ✅
 
-### Критические проблемы (исправлено)
+### Критические проблемы
 - [x] **Хардкод `confhub`** — удалён из main.py, тест обновлён
-- [x] **Несоответствие версий Python** — classifiers обновлены (3.13, 3.14), ruff target = py313
-- [x] **Integration-тесты не в CI** — testpaths изменён на `["tests"]`, CI и pre-commit обновлены
-- [x] **ruff exclude для тестов** — убран exclude, CI и pre-commit проверяют tests + examples
+- [x] **Несоответствие версий Python** — classifiers обновлены (3.10–3.14), ruff target = py310
+- [x] **Integration-тесты не в CI** — testpaths = `["tests"]`, CI и pre-commit обновлены
+- [x] **ruff exclude для тестов** — убран exclude, проверяются tests + examples
 
 ### Среднеприоритетные
-- [x] Интеграционные тесты используют перехват `sys.stderr` — хрупкий подход → **исправлено: временные файлы**
+- [x] Integration-тесты используют временные файлы вместо перехвата stderr
 
 ### Низкоприоритетные
-- [x] Рассмотреть убрать `ANN` и `ARG` из ignore ruff — **решено оставить**: mypy strict покрывает src, ANN в тестах избыточен
+- [x] ANN и ARG в ignore ruff — оставлено: mypy strict покрывает src
 
-### Итоги исправлений
-- **force параметр**: SetupLogger, InitLoggers, get_logger() принимают force=True
-- **add_logger()**: использует incremental dictConfig для уровня/propagate
-- **remove_logger()**: полностью очищает из logging.root.manager.loggerDict
-- **Python 3.10+**: classifiers, CI matrix (3.10-3.14), ruff/mypy target
-- **RendererProto protocol**: кастомные рендереры через renderer параметр
-- **save_config/load_config**: сериализация конфигурации в JSON
-- **__getattr__ упрощён**: убран мёртвый код, корректная обработка ошибок
-- Coverage остался 100% (117 тестов)
-- Git история: чистая, никаких следов kitstructlog
-- PyPI: опубликован `pylogkit-dev` v0.3.0
+### Итоги
+- Coverage: **100%** (125 тестов)
+- Git история: чистая, без следов kitstructlog
+- PyPI: `pylogkit-dev` v0.3.0
 
 ## Правила проекта
 - Не создавать документацию без запроса

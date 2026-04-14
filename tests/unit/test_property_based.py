@@ -1,6 +1,8 @@
 """Property-based tests for pylogkit processors and utilities."""
 
+import json
 import string
+from datetime import UTC, date, datetime
 
 import pytest
 from hypothesis import given
@@ -8,13 +10,16 @@ from hypothesis import strategies as st
 
 from pylogkit.main import (
     InvalidLoggerNameError,
+    Level,
     LoggerReg,
     SetupLogger,
+    _json_default,
     add_caller_details,
     bind,
     clear_context,
     context_scope,
     get_context,
+    make_json_safe,
 )
 
 
@@ -192,3 +197,157 @@ def test_add_caller_details_with_defaults():
     result = add_caller_details(None, "", event_dict)
     assert result["logger"] == "?:?:0"
     assert result["event"] == "test"
+
+
+# --- Property-based tests for make_json_safe and _json_default ---
+
+
+def _json_safe_values(max_depth: int = 3) -> st.SearchStrategy:
+    """Generate JSON-safe values of various types."""
+    basic = st.one_of(
+        st.none(),
+        st.booleans(),
+        st.integers(min_value=-10000, max_value=10000),
+        st.floats(min_value=-1000, max_value=1000, allow_nan=False, allow_infinity=False),
+        st.text(max_size=100),
+    )
+    if max_depth <= 0:
+        return basic
+
+    nested = st.deferred(
+        lambda: st.one_of(
+            st.dictionaries(
+                keys=st.text(min_size=1, max_size=20),
+                values=st.one_of(basic, nested),
+                min_size=0,
+                max_size=5,
+            ),
+            st.lists(
+                st.one_of(basic, nested),
+                min_size=0,
+                max_size=5,
+            ),
+        )
+    )
+    return st.one_of(basic, nested)
+
+
+@given(
+    event_dict=st.dictionaries(
+        keys=st.text(min_size=1, max_size=20),
+        values=_json_safe_values(max_depth=2),
+        min_size=0,
+        max_size=10,
+    ),
+)
+def test_make_json_safe_preserves_json_safe_values(event_dict):
+    """make_json_safe should not modify already JSON-safe values."""
+    result = make_json_safe(None, "", event_dict.copy())
+    # Result should be JSON serializable
+    serialized = json.dumps(result)
+    assert serialized is not None
+
+
+@given(
+    event_dict=st.dictionaries(
+        keys=st.text(min_size=1, max_size=20),
+        values=st.one_of(
+            st.just(datetime(2026, 1, 1, tzinfo=UTC)),
+            st.just(date(2026, 1, 1)),
+            st.just({1, 2, 3}),
+            st.just(ValueError("test")),
+        ),
+        min_size=1,
+        max_size=5,
+    ),
+)
+def test_make_json_safe_converts_non_serializable(event_dict):
+    """make_json_safe should convert non-serializable values to JSON-safe ones."""
+    result = make_json_safe(None, "", event_dict.copy())
+    # Result should be JSON serializable
+    json_str = json.dumps(result)
+    assert json_str is not None
+    # Verify round-trip
+    parsed = json.loads(json_str)
+    assert isinstance(parsed, dict)
+
+
+@given(
+    nested=st.one_of(
+        st.dictionaries(
+            keys=st.text(min_size=1, max_size=10),
+            values=st.lists(
+                st.one_of(
+                    st.just(datetime(2026, 4, 14, tzinfo=UTC)),
+                    st.just(date(2026, 4, 14)),
+                    st.integers(),
+                ),
+                min_size=0,
+                max_size=5,
+            ),
+            min_size=1,
+            max_size=3,
+        ),
+        st.lists(
+            st.dictionaries(
+                keys=st.text(min_size=1, max_size=10),
+                values=st.one_of(
+                    st.just(datetime(2026, 4, 14, tzinfo=UTC)),
+                    st.text(max_size=50),
+                ),
+                min_size=1,
+                max_size=3,
+            ),
+            min_size=1,
+            max_size=3,
+        ),
+    ),
+)
+def test_make_json_safe_handles_deeply_nested(nested):
+    """make_json_safe should handle deeply nested structures with mixed types."""
+    event_dict = {"data": nested}
+    result = make_json_safe(None, "", event_dict)
+    json_str = json.dumps(result)
+    assert json_str is not None
+    parsed = json.loads(json_str)
+    assert isinstance(parsed, dict)
+
+
+@given(
+    value=st.one_of(
+        st.just(datetime.now(tz=UTC)),
+        st.just(datetime.now(tz=UTC).date()),
+        st.just(set(range(5))),
+        st.just(Exception("test_error")),
+        st.just(Level.INFO),
+    ),
+)
+def test_json_default_always_returns_serializable(value):
+    """_json_default should always return JSON-serializable values."""
+    result = _json_default(value)
+    # Should not raise
+    json.dumps({"value": result})
+
+
+def test_make_json_safe_with_empty_dict():
+    """make_json_safe should handle empty event dicts."""
+    result = make_json_safe(None, "", {})
+    assert result == {}
+    assert json.dumps(result) == "{}"
+
+
+@given(
+    key=st.text(min_size=1, max_size=50),
+    value=st.one_of(
+        st.none(),
+        st.booleans(),
+        st.integers(),
+        st.floats(allow_nan=False, allow_infinity=False),
+        st.text(max_size=100),
+    ),
+)
+def test_make_json_safe_identity_for_primitives(key, value):
+    """make_json_safe should not modify primitive JSON-safe values."""
+    event_dict = {key: value}
+    result = make_json_safe(None, "", event_dict.copy())
+    assert result[key] == value
