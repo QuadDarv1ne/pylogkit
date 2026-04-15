@@ -111,7 +111,7 @@
 - [x] Property-based тестирование для процессоров (hypothesis)
 - [x] Добавить benchmarks для оценки производительности
 - [ ] Рассмотреть добавление pydantic для валидации конфигурации
-- [ ] `load_config()` возвращает dict, но нет удобного `from_config()` конструктора
+- [x] `from_config()` конструктор — добавлен `InitLoggers.from_config(path)` ✅
 - [x] `save_config()` не сохраняет `log_file`, `max_bytes`, `backup_count` — исправлено ✅
 - [ ] `_JSON_TYPES` кортеж — можно расширить до frozenset для O(1) lookup
 
