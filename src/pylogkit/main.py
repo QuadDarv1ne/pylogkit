@@ -460,10 +460,7 @@ class InitLoggers:
         """Return an existing logger instance by name."""
         if name.startswith("_"):
             raise AttributeError(name)
-        instances = self._instances
-        registered = ", ".join(instances)
-        _msg = f"Logger '{name}' not found. Available: {registered}"
-        raise LoggerNotFoundError(_msg)
+        self._not_found(name)
 
     def get_logger(self, name: str) -> BoundLogger:
         """
@@ -475,9 +472,13 @@ class InitLoggers:
         try:
             return instances[name]  # type: ignore[no-any-return]
         except KeyError as exc:
-            registered = ", ".join(instances)
-            _msg = f"Logger '{name}' not found. Available: {registered}"
-            raise LoggerNotFoundError(_msg) from exc
+            self._not_found(name, exc)
+
+    def _not_found(self, name: str, cause: BaseException | None = None) -> None:
+        instances = object.__getattribute__(self, "_instances")
+        registered = ", ".join(instances)
+        _msg = f"Logger '{name}' not found. Available: {registered}"
+        raise LoggerNotFoundError(_msg) from cause
 
     def add_logger(self, name: str, *, level: Level = Level.DEBUG, propagate: bool = False) -> BoundLogger:
         """
@@ -543,9 +544,7 @@ class InitLoggers:
         """
         instances = object.__getattribute__(self, "_instances")
         if name not in instances:
-            registered = ", ".join(instances)
-            _msg = f"Logger '{name}' not found. Available: {registered}"
-            raise LoggerNotFoundError(_msg)
+            self._not_found(name)
 
         # Clean up underlying logging handlers
         named_logger = logging.getLogger(name)
@@ -586,9 +585,7 @@ class InitLoggers:
         for reg in loggers.values():
             if reg.name == name:
                 return reg.level  # type: ignore[no-any-return]
-        registered = ", ".join(reg.name for reg in loggers.values())
-        _msg = f"Logger '{name}' not found. Available: {registered}"
-        raise LoggerNotFoundError(_msg)
+        self._not_found(name)
 
     def logger_names(self) -> list[str]:
         """Return list of registered logger names."""
