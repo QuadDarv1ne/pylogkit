@@ -37,6 +37,11 @@
 - ✅ **Docstring fix** — `backup_count`: "0 = unlimited" → "0 = no rotation"
 - ✅ **Double getattr eliminated** — `InitLoggers.__init__`: walrus operator вместо двойного `getattr`
 - ✅ **Stale kitstructlog editable install removed** — конфликтующая установка из старого проекта
+- ✅ **MODE_DEV env var fix** — `"0"` и `"false"` больше не считаются truthy
+- ✅ **Dead code removed** — `bool` удалён из `_JSON_TYPES` (bool — подкласс int)
+- ✅ **__init__.py simplified** — убран冗余 `import X as X` (42 → 34 строки)
+- ✅ **publish.yml PyPI URL fixed** — `pylogkit` → `pylogkit-dev` (совпадение с pyproject.toml)
+- ✅ **Test assertions strengthened** — убраны слабые `or "_msg"` fallbacks в 5 тестах
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
