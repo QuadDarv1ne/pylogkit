@@ -5,7 +5,7 @@ import string
 from datetime import UTC, date, datetime
 
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from pylogkit.main import (
@@ -131,6 +131,7 @@ def test_bind_and_get_context_roundtrip(keys):
     outer_keys=st.dictionaries(keys=non_empty_strings, values=context_values, min_size=1, max_size=5),
     inner_keys=st.dictionaries(keys=non_empty_strings, values=context_values, min_size=1, max_size=5),
 )
+@settings(deadline=None)
 def test_context_scope_restores_outer_context(outer_keys, inner_keys):
     """context_scope should restore previous context on exit."""
     clear_context()

@@ -25,7 +25,7 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- README.md: исправлены PyPI бейджи `pylogkit` → `pylogkit-dev`
+- test_property_based.py: `test_context_scope_restores_outer_context` — добавлен `@settings(deadline=None)` (flaky hypothesis test)
 - todo.md: обновлён статус
 
 ### Последние улучшения (2026-04-15)
@@ -45,6 +45,7 @@
 - ✅ **publish.yml PyPI URL fixed** — `pylogkit` → `pylogkit-dev` (совпадение с pyproject.toml)
 - ✅ **Test assertions strengthened** — убраны слабые `or "_msg"` fallbacks в 5 тестах
 - ✅ **README.md PyPI badges fixed** — `pylogkit` → `pylogkit-dev` в бейджах и ссылках
+- ✅ **Hypothesis deadline fix** — `test_context_scope_restores_outer_context`: добавлен `@settings(deadline=None)`
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
