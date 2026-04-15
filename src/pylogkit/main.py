@@ -30,7 +30,7 @@ def _json_default(obj: Any) -> Any:
     """
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
-    if isinstance(obj, set):
+    if isinstance(obj, (set, frozenset)):
         return list(obj)
     if isinstance(obj, bytes):
         return obj.decode("utf-8", errors="replace")
@@ -50,7 +50,7 @@ def _make_value_json_safe(value: Any) -> Any:
     """Recursively convert a value to JSON-safe representation."""
     if isinstance(value, dict):
         return {k: _make_value_json_safe(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, (list, tuple, frozenset)):
         return [_make_value_json_safe(item) for item in value]
     if isinstance(value, _JSON_TYPES):
         return value

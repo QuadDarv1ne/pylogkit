@@ -695,6 +695,13 @@ def test_json_default_enum():
     assert result == "INFO"
 
 
+def test_json_default_frozenset():
+    """Test _json_default handles frozenset."""
+    result = _json_default(frozenset([1, 2, 3]))
+    assert isinstance(result, list)
+    assert set(result) == {1, 2, 3}
+
+
 def test_json_default_bytes():
     """Test _json_default handles bytes."""
     result = _json_default(b"hello")
@@ -742,6 +749,14 @@ def test_make_json_safe_converts_datetime():
 def test_make_json_safe_converts_set():
     """Test make_json_safe converts set values."""
     event_dict = {"event": "test", "tags": {"a", "b", "c"}}
+    result = make_json_safe(None, "", event_dict)
+    assert isinstance(result["tags"], list)
+    assert set(result["tags"]) == {"a", "b", "c"}
+
+
+def test_make_json_safe_converts_frozenset():
+    """Test make_json_safe converts frozenset values."""
+    event_dict = {"event": "test", "tags": frozenset(["a", "b", "c"])}
     result = make_json_safe(None, "", event_dict)
     assert isinstance(result["tags"], list)
     assert set(result["tags"]) == {"a", "b", "c"}
