@@ -632,6 +632,7 @@ class InitLoggers:
         path: str,
         *,
         force: bool = False,
+        renderer: RendererProto | None = None,
     ) -> "InitLoggers":
         """
         Create an InitLoggers instance from a saved JSON config file.
@@ -639,6 +640,7 @@ class InitLoggers:
         Args:
             path: File path to load configuration from.
             force: Reconfigure logging even if already configured.
+            renderer: Optional custom renderer to override saved config.
 
         Returns:
             A configured InitLoggers instance.
@@ -664,4 +666,5 @@ class InitLoggers:
             max_bytes=config.get("max_bytes", 0),
             backup_count=config.get("backup_count", 0),
             force=force,
+            renderer=renderer,
         )

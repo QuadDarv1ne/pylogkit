@@ -28,6 +28,7 @@
 - todo.md: обновлён статус (ConsoleRenderer fix)
 
 ### Последние улучшения (2026-04-15)
+- ✅ **`from_config` renderer support** — добавлен параметр `renderer` в `InitLoggers.from_config()`
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
 - ✅ **Bump версии до 0.4.0** — pyproject.toml, __init__.py, тест
 - ✅ **Оптимизация hot path** — `isinstance`-check вместо `json.dumps()` в `_make_value_json_safe`
