@@ -293,17 +293,22 @@ class SetupLogger:
         handlers_cfg = self._get_handler_config()
 
         # Use custom renderer if provided, otherwise default based on mode
-        render_proc = self._custom_renderer or structlog.processors.JSONRenderer()
+        if self._custom_renderer is not None:
+            active_proc = self._custom_renderer
+        elif self._renderer == self.CONSOLE_HANDLER:
+            active_proc = structlog.dev.ConsoleRenderer()
+        else:
+            active_proc = structlog.processors.JSONRenderer()
 
         formatters = {
             self.JSON_HANDLER: {
                 "()": structlog.stdlib.ProcessorFormatter,
-                "processor": render_proc,
+                "processor": active_proc,
                 "foreign_pre_chain": self._pre(),
             },
             self.CONSOLE_HANDLER: {
                 "()": structlog.stdlib.ProcessorFormatter,
-                "processor": render_proc,
+                "processor": active_proc,
                 "foreign_pre_chain": self._pre(),
             },
         }
