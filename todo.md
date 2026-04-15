@@ -28,6 +28,7 @@
 - todo.md: обновлён статус (ConsoleRenderer fix)
 
 ### Последние улучшения (2026-04-15)
+- ✅ **`_make_value_json_safe` recursion fix** — `_json_default` output теперь рекурсивно обрабатывается (объекты с `__dict__`, содержащим nested datetime/set и т.д.)
 - ✅ **`from_config` renderer support** — добавлен параметр `renderer` в `InitLoggers.from_config()`
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
 - ✅ **Bump версии до 0.4.0** — pyproject.toml, __init__.py, тест
