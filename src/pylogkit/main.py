@@ -600,6 +600,9 @@ class InitLoggers:
             "loggers": {reg.name: {"level": reg.level.value, "propagate": reg.propagate} for reg in loggers.values()},
             "developer_mode": setup._developer_mode,  # noqa: SLF001
             "async_mode": setup._async_mode,  # noqa: SLF001
+            "log_file": setup._log_file,  # noqa: SLF001
+            "max_bytes": setup._max_bytes,  # noqa: SLF001
+            "backup_count": setup._backup_count,  # noqa: SLF001
         }
         Path(path).write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")
 

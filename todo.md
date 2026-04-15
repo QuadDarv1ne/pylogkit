@@ -1,7 +1,7 @@
 # pylogkit - Todo
 
 ## Текущий статус (2026-04-15)
-- Ветка разработки: `dev` (есть локальные изменения — требуется commit + push)
+- Ветка разработки: `dev` (все изменения закоммичены, рабочая директория чистая)
 - Версия: `0.4.0`
 - Python: `>=3.10` (3.10–3.14)
 - Тесты: **125 passed** ✅ (110 unit + 15 property-based)
@@ -10,7 +10,7 @@
 - CI/CD: ✅ GitHub Actions (test + build + build-PR + pip-audit + ruff format --check + **pypi-publish**)
 - Ruff: ✅ src + tests + examples + benchmarks + format check
 - Репозиторий: https://github.com/QuadDarv1ne/pylogkit
-- PyPI: `pylogkit-dev` v0.3.0 (v0.4.0 готова к публикации)
+- PyPI: `pylogkit-dev` v0.3.0 (v0.4.0 готова к публикации — нужен тег `v0.4.0`)
 - Лицензия: MIT
 
 ### Архитектура
@@ -24,16 +24,16 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- `ci.yml` — добавлен PyPI publish job
-- `pyproject.toml` + `__init__.py` + тест — bump 0.4.0
-- `main.py` — оптимизация `_make_value_json_safe` (isinstance вместо json.dumps)
-- upstream remote удалён
+- `main.py` — fix: save_config() теперь сохраняет log_file, max_bytes, backup_count
+- `test_pylogkit.py` — добавлены проверки новых полей в test_save_and_load_config
 
 ### Последние улучшения (2026-04-15)
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
 - ✅ **Bump версии до 0.4.0** — pyproject.toml, __init__.py, тест
 - ✅ **Оптимизация hot path** — `isinstance`-check вместо `json.dumps()` в `_make_value_json_safe`
 - ✅ **Удалён upstream remote** — старый kitstructlog больше не нужен
+- ✅ **Property-based тесты** — +6 тестов для make_json_safe и _json_default (hypothesis)
+- ✅ **frozen app защита** — sys.stderr.isatty() try/except OSError
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
@@ -84,7 +84,8 @@
 - [ ] **Пример save/load config** — демонстрация сериализации
 - [ ] **CHANGELOG.md** — автоматическая генерация при релизе
 - [ ] **Тесты кастомного renderer** — проверка RendererProto protocol
-- [ ] **Commit + push origin/dev**
+- [ ] **Тег v0.4.0 + push** — триггер PyPI publish
+- [ ] **dev → main merge** — синхронизация веток
 
 ### Среднесрочные улучшения (v0.5.x)
 - [ ] **Tracing support** — интеграция с OpenTelemetry/trace_id, span_id
@@ -110,6 +111,9 @@
 - [x] Property-based тестирование для процессоров (hypothesis)
 - [x] Добавить benchmarks для оценки производительности
 - [ ] Рассмотреть добавление pydantic для валидации конфигурации
+- [ ] `load_config()` возвращает dict, но нет удобного `from_config()` конструктора
+- [x] `save_config()` не сохраняет `log_file`, `max_bytes`, `backup_count` — исправлено ✅
+- [ ] `_JSON_TYPES` кортеж — можно расширить до frozenset для O(1) lookup
 
 ## Результаты аудита (2026-04-12) — всё исправлено ✅
 

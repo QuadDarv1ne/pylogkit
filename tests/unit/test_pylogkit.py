@@ -1227,4 +1227,7 @@ def test_save_and_load_config(tmp_path):
     assert loaded["loggers"]["CFG_DB"]["level"] == "DEBUG"
     assert loaded["loggers"]["CFG_DB"]["propagate"] is True
     assert loaded["developer_mode"] is True
+    assert loaded["log_file"] is None
+    assert loaded["max_bytes"] == 0
+    assert loaded["backup_count"] == 0
     SetupLogger.reset()
