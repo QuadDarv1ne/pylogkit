@@ -11,6 +11,7 @@
 - Ruff: ✅ src + tests + examples + benchmarks + format check
 - Репозиторий: https://github.com/QuadDarv1ne/pylogkit
 - PyPI: `pylogkit-dev` v0.3.0 (v0.4.0 готова к публикации — нужен тег `v0.4.0`)
+- README.md: бейджи PyPI исправлены — `pylogkit` → `pylogkit-dev`
 - Лицензия: MIT
 
 ### Архитектура
@@ -24,7 +25,8 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- Нет (рабочая директория чистая)
+- README.md: исправлены PyPI бейджи `pylogkit` → `pylogkit-dev`
+- todo.md: обновлён статус
 
 ### Последние улучшения (2026-04-15)
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
@@ -42,6 +44,7 @@
 - ✅ **__init__.py simplified** — убран冗余 `import X as X` (42 → 34 строки)
 - ✅ **publish.yml PyPI URL fixed** — `pylogkit` → `pylogkit-dev` (совпадение с pyproject.toml)
 - ✅ **Test assertions strengthened** — убраны слабые `or "_msg"` fallbacks в 5 тестах
+- ✅ **README.md PyPI badges fixed** — `pylogkit` → `pylogkit-dev` в бейджах и ссылках
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)

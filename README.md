@@ -1,7 +1,7 @@
 # pylogkit
 
-[![Версия на PyPI](https://badge.fury.io/py/pylogkit.svg)](https://pypi.org/project/pylogkit/)
-[![Версии Python](https://img.shields.io/pypi/pyversions/pylogkit.svg)](https://pypi.org/project/pylogkit/)
+[![Версия на PyPI](https://badge.fury.io/py/pylogkit-dev.svg)](https://pypi.org/project/pylogkit-dev/)
+[![Версии Python](https://img.shields.io/pypi/pyversions/pylogkit-dev.svg)](https://pypi.org/project/pylogkit-dev/)
 [![Лицензия: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Coverage: 100%](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)](https://github.com/QuadDarv1ne/pylogkit/actions)
 
