@@ -4,7 +4,7 @@
 - Ветка разработки: `dev` (все изменения закоммичены, рабочая директория чистая)
 - Версия: `0.4.0`
 - Python: `>=3.10` (3.10–3.14)
-- Тесты: **125 passed** ✅ (110 unit + 15 property-based)
+- Тесты: **126 passed** ✅ (111 unit + 15 property-based)
 - Coverage: **100%** (fail_under = 100)
 - Type checking: ✅ mypy strict + py.typed + BoundLogger
 - CI/CD: ✅ GitHub Actions (test + build + build-PR + pip-audit + ruff format --check + **pypi-publish**)
@@ -24,8 +24,7 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- `main.py` — fix: save_config() теперь сохраняет log_file, max_bytes, backup_count
-- `test_pylogkit.py` — добавлены проверки новых полей в test_save_and_load_config
+- `main.py` — refactor: from_config() использует type() вместо class statement
 
 ### Последние улучшения (2026-04-15)
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
