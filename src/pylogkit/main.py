@@ -618,3 +618,43 @@ class InitLoggers:
             Configuration dict suitable for creating loggers.
         """
         return json.loads(Path(path).read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+
+    @classmethod
+    def from_config(
+        cls,
+        path: str,
+        *,
+        force: bool = False,
+    ) -> "InitLoggers":
+        """
+        Create an InitLoggers instance from a saved JSON config file.
+
+        Args:
+            path: File path to load configuration from.
+            force: Reconfigure logging even if already configured.
+
+        Returns:
+            A configured InitLoggers instance.
+        """
+        config = cls.load_config(path)
+        loggers_cfg = config.get("loggers", {})
+        regs = [
+            LoggerReg(name=name, level=Level(v["level"]), propagate=v.get("propagate", False))
+            for name, v in loggers_cfg.items()
+        ]
+
+        class _ConfiguredLoggers(cls):  # type: ignore[valid-type,misc]
+            pass
+
+        # Attach LoggerReg instances as class attributes so __init__ picks them up
+        for reg in regs:
+            setattr(_ConfiguredLoggers, reg.name, reg)
+
+        return _ConfiguredLoggers(
+            developer_mode=config.get("developer_mode", False),
+            async_mode=config.get("async_mode", False),
+            log_file=config.get("log_file"),
+            max_bytes=config.get("max_bytes", 0),
+            backup_count=config.get("backup_count", 0),
+            force=force,
+        )

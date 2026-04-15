@@ -1231,3 +1231,25 @@ def test_save_and_load_config(tmp_path):
     assert loaded["max_bytes"] == 0
     assert loaded["backup_count"] == 0
     SetupLogger.reset()
+
+
+def test_from_config_creates_loggers(tmp_path):
+    """Test creating InitLoggers from a saved config file."""
+    SetupLogger.reset()
+
+    class ConfigLoggers(InitLoggers):
+        app = LoggerReg(name="FC_APP", level=LoggerReg.Level.WARNING)
+        db = LoggerReg(name="FC_DB", level=LoggerReg.Level.DEBUG, propagate=True)
+
+    loggers = ConfigLoggers(developer_mode=True, log_file=str(tmp_path / "fc.log"))
+    config_file = tmp_path / "fc_config.json"
+    loggers.save_config(str(config_file))
+    SetupLogger.reset()
+
+    restored = InitLoggers.from_config(str(config_file))
+    assert "FC_APP" in restored.logger_names()
+    assert "FC_DB" in restored.logger_names()
+    assert restored.logger_level("FC_APP") == LoggerReg.Level.WARNING
+    assert restored.logger_level("FC_DB") == LoggerReg.Level.DEBUG
+    assert restored._setup._developer_mode is True
+    SetupLogger.reset()
