@@ -33,6 +33,10 @@
 - ✅ **Удалён upstream remote** — старый kitstructlog больше не нужен
 - ✅ **Property-based тесты** — +6 тестов для make_json_safe и _json_default (hypothesis)
 - ✅ **frozen app защита** — sys.stderr.isatty() try/except OSError
+- ✅ **Vacuous assertion fixed** — `test_context_scope_cleans_on_exception`: `pass` заменён на `assert`
+- ✅ **Docstring fix** — `backup_count`: "0 = unlimited" → "0 = no rotation"
+- ✅ **Double getattr eliminated** — `InitLoggers.__init__`: walrus operator вместо двойного `getattr`
+- ✅ **Stale kitstructlog editable install removed** — конфликтующая установка из старого проекта
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
