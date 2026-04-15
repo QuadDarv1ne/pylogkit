@@ -696,6 +696,18 @@ def test_json_default_enum():
     assert result == "INFO"
 
 
+def test_json_default_bytes():
+    """Test _json_default handles bytes."""
+    result = _json_default(b"hello")
+    assert result == "hello"
+
+
+def test_json_default_bytes_invalid_utf8():
+    """Test _json_default handles invalid UTF-8 bytes."""
+    result = _json_default(b"\xff\xfe")
+    assert isinstance(result, str)
+
+
 def test_json_default_object_with_dict():
     """Test _json_default handles objects with __dict__."""
 

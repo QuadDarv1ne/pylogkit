@@ -26,12 +26,14 @@ def _json_default(obj: Any) -> Any:
     """
     Default handler for JSON serialization of non-serializable objects.
 
-    Handles datetime, date, set, Exception, Enum, and objects with __repr__.
+    Handles datetime, date, set, bytes, Exception, Enum, and objects with __repr__.
     """
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
     if isinstance(obj, set):
         return list(obj)
+    if isinstance(obj, bytes):
+        return obj.decode("utf-8", errors="replace")
     if isinstance(obj, Exception):
         return f"{type(obj).__name__}: {obj}"
     if isinstance(obj, Enum):
