@@ -26,7 +26,7 @@ def _json_default(obj: Any) -> Any:
     """
     Default handler for JSON serialization of non-serializable objects.
 
-    Handles datetime, date, set, bytes, Exception, Enum, and objects with __repr__.
+    Handles datetime, date, set, frozenset, bytes, Exception, Enum, and objects with __repr__.
     """
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
@@ -62,8 +62,8 @@ def make_json_safe(_: logging.Logger, __: str, event_dict: EventDict) -> EventDi
     Convert non-JSON-serializable values to JSON-safe representations.
 
     Recursively processes all values in the event dict, including nested
-    dicts and lists, converting datetime, set, Exception, Enum and other
-    non-serializable objects to safe formats.
+    dicts, lists, and frozensets, converting datetime, set, frozenset,
+    Exception, Enum and other non-serializable objects to safe formats.
     """
     return {k: _make_value_json_safe(v) for k, v in event_dict.items()}
 
