@@ -4,7 +4,7 @@
 - Ветка разработки: `dev` (все изменения закоммичены, рабочая директория чистая)
 - Версия: `0.4.0`
 - Python: `>=3.10` (3.10–3.14)
-- Тесты: **128 passed** ✅ (113 unit + 15 property-based)
+- Тесты: **130 passed** ✅ (115 unit + 15 property-based)
 - Coverage: **100%** (fail_under = 100)
 - Type checking: ✅ mypy strict + py.typed + BoundLogger
 - CI/CD: ✅ GitHub Actions (test + build + build-PR + pip-audit + ruff format --check + **pypi-publish**)
@@ -25,8 +25,7 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- test_property_based.py: `test_context_scope_restores_outer_context` — добавлен `@settings(deadline=None)` (flaky hypothesis test)
-- todo.md: обновлён статус
+- todo.md: обновлён статус (130 тестов, frozenset fix)
 
 ### Последние улучшения (2026-04-15)
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
@@ -46,6 +45,7 @@
 - ✅ **Test assertions strengthened** — убраны слабые `or "_msg"` fallbacks в 5 тестах
 - ✅ **README.md PyPI badges fixed** — `pylogkit` → `pylogkit-dev` в бейджах и ссылках
 - ✅ **Hypothesis deadline fix** — `test_context_scope_restores_outer_context`: добавлен `@settings(deadline=None)`
+- ✅ **frozenset support** — `_json_default` и `_make_value_json_safe` теперь обрабатывают `frozenset` как `list`
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
