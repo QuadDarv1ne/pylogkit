@@ -25,7 +25,7 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- todo.md: обновлён статус (130 тестов, frozenset fix)
+- todo.md: обновлён статус (ConsoleRenderer fix)
 
 ### Последние улучшения (2026-04-15)
 - ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
@@ -46,6 +46,7 @@
 - ✅ **README.md PyPI badges fixed** — `pylogkit` → `pylogkit-dev` в бейджах и ссылках
 - ✅ **Hypothesis deadline fix** — `test_context_scope_restores_outer_context`: добавлен `@settings(deadline=None)`
 - ✅ **frozenset support** — `_json_default` и `_make_value_json_safe` теперь обрабатывают `frozenset` как `list`
+- ✅ **ConsoleRenderer в dev mode** — исправлено: dev режим теперь использует `ConsoleRenderer` вместо `JSONRenderer` (как задокументировано в README)
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
