@@ -161,8 +161,7 @@ def test_context_scope_cleans_on_exception(keys):
             raise ValueError("test")
         ctx = get_context()
         for k in keys:
-            if k not in ctx:
-                pass  # expected - context was cleaned
+            assert k not in ctx, f"Context key '{k}' was not cleaned up after exception"
     finally:
         clear_context()
 

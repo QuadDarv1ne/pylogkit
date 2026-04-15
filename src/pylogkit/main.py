@@ -385,7 +385,7 @@ def get_logger(
         async_mode: Use async BoundLogger if True, sync if False.
         log_file: Path to log file. If None, logs to stderr.
         max_bytes: Maximum size in bytes before rotation (0 = no rotation).
-        backup_count: Number of backup files to keep (0 = unlimited).
+        backup_count: Number of backup files to keep (0 = no rotation, only used with max_bytes > 0).
         force: Reconfigure logging even if already configured.
 
     Returns:
@@ -434,7 +434,7 @@ class InitLoggers:
         force: bool = False,
         renderer: RendererProto | None = None,
     ) -> None:
-        self._loggers = {name: getattr(self, name) for name in dir(self) if isinstance(getattr(self, name), LoggerReg)}
+        self._loggers = {name: attr for name in dir(self) if isinstance(attr := getattr(self, name), LoggerReg)}
         if not self._loggers:
             _msg_no_loggers = "No loggers have been defined in the subclass."
             raise LoggerError(_msg_no_loggers)
