@@ -54,7 +54,7 @@ def _make_value_json_safe(value: Any) -> Any:
         return [_make_value_json_safe(item) for item in value]
     if isinstance(value, _JSON_TYPES):
         return value
-    return _json_default(value)
+    return _make_value_json_safe(_json_default(value))
 
 
 def make_json_safe(_: logging.Logger, __: str, event_dict: EventDict) -> EventDict:
