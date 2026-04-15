@@ -384,7 +384,6 @@ def test_setup_logger_with_log_file(tmp_path):
     logger.info("test message", key="value")
     assert log_file.exists()
     content = log_file.read_text()
-    assert "test_message" in content or "_msg" in content
     assert "test message" in content
     SetupLogger.reset()
 
@@ -405,7 +404,7 @@ def test_setup_logger_with_rotating_file(tmp_path):
     logger.info("rotating test message")
     assert log_file.exists()
     content = log_file.read_text()
-    assert "rotating test message" in content or "_msg" in content
+    assert "rotating test message" in content
     SetupLogger.reset()
 
 
@@ -421,7 +420,7 @@ def test_get_logger_with_log_file(tmp_path):
         handler.flush()
     assert log_file.exists()
     content = log_file.read_text()
-    assert "quick file message" in content or "_msg" in content
+    assert "quick file message" in content
     SetupLogger.reset()
 
 
@@ -438,7 +437,7 @@ def test_init_loggers_with_log_file(tmp_path):
     logger.info("app file message", version="1.0")
     assert log_file.exists()
     content = log_file.read_text()
-    assert "app file message" in content or "_msg" in content
+    assert "app file message" in content
     SetupLogger.reset()
 
 
@@ -855,7 +854,7 @@ def test_add_logger_with_propagate(tmp_path):
         handler.flush()
 
     content = log_file.read_text()
-    assert "propagate test" in content or "_msg" in content
+    assert "propagate test" in content
     SetupLogger.reset()
 
 

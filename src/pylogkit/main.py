@@ -43,7 +43,7 @@ def _json_default(obj: Any) -> Any:
     return repr(obj)
 
 
-_JSON_TYPES: tuple[type, ...] = (str, int, float, bool, type(None))
+_JSON_TYPES: tuple[type, ...] = (str, int, float, type(None))
 
 
 def _make_value_json_safe(value: Any) -> Any:
@@ -214,7 +214,7 @@ class SetupLogger:
             is_tty = sys.stderr.isatty()
         except (OSError, AttributeError):
             is_tty = False
-        if is_tty or os.environ.get("MODE_DEV") or self._developer_mode:
+        if is_tty or os.environ.get("MODE_DEV", "").lower() not in ("", "0", "false") or self._developer_mode:
             return self.CONSOLE_HANDLER
         return self.JSON_HANDLER
 
