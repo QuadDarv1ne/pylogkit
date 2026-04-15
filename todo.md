@@ -1,16 +1,16 @@
 # pylogkit - Todo
 
-## Текущий статус (2026-04-14)
-- Ветка разработки: `dev` (2 коммита впереди origin/dev — требуется push)
-- Версия: `0.3.0`
+## Текущий статус (2026-04-15)
+- Ветка разработки: `dev` (есть локальные изменения — требуется commit + push)
+- Версия: `0.4.0`
 - Python: `>=3.10` (3.10–3.14)
-- Тесты: **125 passed** ✅ (119 unit + 6 property-based)
+- Тесты: **125 passed** ✅ (110 unit + 15 property-based)
 - Coverage: **100%** (fail_under = 100)
 - Type checking: ✅ mypy strict + py.typed + BoundLogger
-- CI/CD: ✅ GitHub Actions (test + build + build-PR + pip-audit + ruff format --check)
+- CI/CD: ✅ GitHub Actions (test + build + build-PR + pip-audit + ruff format --check + **pypi-publish**)
 - Ruff: ✅ src + tests + examples + benchmarks + format check
 - Репозиторий: https://github.com/QuadDarv1ne/pylogkit
-- PyPI: опубликован `pylogkit-dev` v0.3.0
+- PyPI: `pylogkit-dev` v0.3.0 (v0.4.0 готова к публикации)
 - Лицензия: MIT
 
 ### Архитектура
@@ -24,12 +24,16 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- `tests/unit/test_property_based.py` — изменён (требуется review и commit)
-- `todo.md` — обновляется
+- `ci.yml` — добавлен PyPI publish job
+- `pyproject.toml` + `__init__.py` + тест — bump 0.4.0
+- `main.py` — оптимизация `_make_value_json_safe` (isinstance вместо json.dumps)
+- upstream remote удалён
 
-### Последние улучшения (2026-04-14)
-- ✅ **+6 property-based тестов** — nested dict/list, non-serializable, edge cases
-- ✅ **Исправлены datetime вызовы в тестах** — tzinfo, убраны лишние lambda
+### Последние улучшения (2026-04-15)
+- ✅ **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
+- ✅ **Bump версии до 0.4.0** — pyproject.toml, __init__.py, тест
+- ✅ **Оптимизация hot path** — `isinstance`-check вместо `json.dumps()` в `_make_value_json_safe`
+- ✅ **Удалён upstream remote** — старый kitstructlog больше не нужен
 
 ## Завершённые задачи
 - [x] Pre-commit hooks (ruff, pytest, detect-secrets)
@@ -66,17 +70,21 @@
 - [x] **Кастомный renderer** — RendererProto protocol, параметр renderer
 - [x] **Сериализация конфигурации** — save_config() / load_config() JSON
 - [x] **`__getattr__` упрощён** — убран мёртвый код, корректная обработка ошибок
+- [x] **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
+- [x] **Bump версии до 0.4.0** — pyproject.toml, __init__.py, тест
+- [x] **Оптимизация `_make_value_json_safe`** — `isinstance` вместо `json.dumps()`
+- [x] **Удалён upstream remote** — старый kitstructlog
 
 ## Планы по проекту
 
 ### Ближайшие задачи (v0.4.0)
-- [ ] **Bump версии до 0.4.0** — публикация на PyPI с новыми фичами
+- [x] **Bump версии до 0.4.0** — pyproject.toml, __init__.py, тест
+- [x] **CI PyPI publish** — `pypa/gh-action-pypi-publish` при теге `v*`
 - [ ] **Пример с кастомным renderer** — показать использование RendererProto
 - [ ] **Пример save/load config** — демонстрация сериализации
 - [ ] **CHANGELOG.md** — автоматическая генерация при релизе
-- [ ] **Тесты save_config/load_config** — покрытие сериализации (если ещё не покрыты)
 - [ ] **Тесты кастомного renderer** — проверка RendererProto protocol
-- [ ] **Push origin/dev** — 2 коммита ожидают отправки
+- [ ] **Commit + push origin/dev**
 
 ### Среднесрочные улучшения (v0.5.x)
 - [ ] **Tracing support** — интеграция с OpenTelemetry/trace_id, span_id

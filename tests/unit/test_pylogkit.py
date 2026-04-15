@@ -1021,7 +1021,7 @@ def test_setup_logger_reset_clears_named_loggers():
 
 def test_version_exists():
     """Test that __version__ is defined."""
-    assert __version__ == "0.3.0"
+    assert __version__ == "0.4.0"
 
 
 def test_version_is_string():

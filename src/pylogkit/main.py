@@ -41,17 +41,18 @@ def _json_default(obj: Any) -> Any:
     return repr(obj)
 
 
+_JSON_TYPES: tuple[type, ...] = (str, int, float, bool, type(None))
+
+
 def _make_value_json_safe(value: Any) -> Any:
     """Recursively convert a value to JSON-safe representation."""
     if isinstance(value, dict):
         return {k: _make_value_json_safe(v) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
         return [_make_value_json_safe(item) for item in value]
-    try:
-        json.dumps(value)
-    except (TypeError, ValueError):
-        return _json_default(value)
-    return value
+    if isinstance(value, _JSON_TYPES):
+        return value
+    return _json_default(value)
 
 
 def make_json_safe(_: logging.Logger, __: str, event_dict: EventDict) -> EventDict:
