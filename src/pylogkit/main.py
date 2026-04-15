@@ -643,14 +643,14 @@ class InitLoggers:
             for name, v in loggers_cfg.items()
         ]
 
-        class _ConfiguredLoggers(cls):  # type: ignore[valid-type,misc]
-            pass
-
-        # Attach LoggerReg instances as class attributes so __init__ picks them up
+        # Build class attrs dynamically so __init__ discovers them via dir()
+        attrs: dict[str, Any] = {"__module__": cls.__module__}
         for reg in regs:
-            setattr(_ConfiguredLoggers, reg.name, reg)
+            attrs[reg.name] = reg
 
-        return _ConfiguredLoggers(
+        _configured_loggers = type("_ConfiguredLoggers", (cls,), attrs)
+
+        return _configured_loggers(  # type: ignore[no-any-return]
             developer_mode=config.get("developer_mode", False),
             async_mode=config.get("async_mode", False),
             log_file=config.get("log_file"),
