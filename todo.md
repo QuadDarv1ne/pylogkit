@@ -25,7 +25,7 @@
 - **save_config/load_config** — сериализация конфигурации в JSON
 
 ### Незакоммиченные изменения
-- todo.md: обновлён статус (ConsoleRenderer fix)
+- нет (рабочая директория чистая)
 
 ### Последние улучшения (2026-04-15)
 - ✅ **`_make_value_json_safe` recursion fix** — `_json_default` output теперь рекурсивно обрабатывается (объекты с `__dict__`, содержащим nested datetime/set и т.д.)
